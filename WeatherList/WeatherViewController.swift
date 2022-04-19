@@ -7,10 +7,12 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class WeatherViewController: UIViewController {
   
     let weatherTableView: UITableView = UITableView()
-    let city = ["Seoul", "London", "Chicago"]
+    
+    let cities = ["Seoul", "London", "Chicago"]
+    let repository = WeatherRepository()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +28,9 @@ class ViewController: UIViewController {
         self.weatherTableView.register(WeatherTableViewCell.self, forCellReuseIdentifier: WeatherTableViewCell.identifier)
         
         setConstraint()
+        
+        cities.forEach{  repository.woeIdList(city: $0) }
+        
         
     }
     
@@ -46,10 +51,10 @@ class ViewController: UIViewController {
 }
 
 
-extension ViewController: UITableViewDataSource{
+extension WeatherViewController: UITableViewDataSource{
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return city.count
+        return cities.count
         
     }
     
@@ -58,7 +63,7 @@ extension ViewController: UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return city[section]
+        return cities[section]
     }
     
     
@@ -76,6 +81,6 @@ extension ViewController: UITableViewDataSource{
     }
 }
 
-extension ViewController: UITableViewDelegate{
+extension WeatherViewController: UITableViewDelegate{
     
 }

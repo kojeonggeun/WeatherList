@@ -19,7 +19,8 @@ class WeatherTableViewCell: UITableViewCell {
 
     private let weatherState: UILabel = {
         let state = UILabel()
-        state.text = "오늘날씨 좋네~"
+        state.text = "오늘날씨 좋네~~~~~~~~"
+        state.font = UIFont.systemFont(ofSize:15)
         state.textColor = UIColor.gray
         return state
     }()
@@ -34,6 +35,7 @@ class WeatherTableViewCell: UITableViewCell {
     private let maxTemp: UILabel = {
         let max = UILabel()
         max.text = "Max: 9°C"
+        max.font = UIFont.systemFont(ofSize:15)
         max.textColor = UIColor.gray
         return max
     }()
@@ -41,6 +43,7 @@ class WeatherTableViewCell: UITableViewCell {
     private let minTemp: UILabel = {
         let min = UILabel()
         min.text = "Min: 1°C"
+        min.font = UIFont.systemFont(ofSize:15)
         min.textColor = UIColor.gray
         return min
     }()
@@ -66,7 +69,7 @@ class WeatherTableViewCell: UITableViewCell {
                 
         
         stackView.axis = .horizontal
-        stackView.spacing = 25
+        stackView.spacing = 5
         stackView.distribution = .fillEqually
 
         for i in temps{
@@ -81,6 +84,7 @@ class WeatherTableViewCell: UITableViewCell {
         
         NSLayoutConstraint.activate([
             day.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            day.trailingAnchor.constraint(greaterThanOrEqualTo: contentView.trailingAnchor, constant: 30),
             day.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
             
             weatherIcon.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
@@ -88,18 +92,19 @@ class WeatherTableViewCell: UITableViewCell {
             weatherIcon.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             weatherIcon.widthAnchor.constraint(equalToConstant: 42),
             weatherIcon.heightAnchor.constraint(equalToConstant: 42),
-            
+                
             weatherState.leadingAnchor.constraint(equalTo: weatherIcon.trailingAnchor, constant: 5),
-            weatherState.trailingAnchor.constraint(greaterThanOrEqualTo: stackView.trailingAnchor, constant: 100),
             weatherState.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             
-
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            
+            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
+            stackView.leadingAnchor.constraint(greaterThanOrEqualTo: weatherState.trailingAnchor, constant: 5),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-
+            stackView.widthAnchor.constraint(equalToConstant: contentView.frame.width / 2),
+            
         ])
+      
         
-        weatherState.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
     }
     
 }
