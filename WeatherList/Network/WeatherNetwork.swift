@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NetworkError: Error {
+public enum NetworkError: Error {
     case unknown
     case invalidRequest
     case jsonError
@@ -38,7 +38,6 @@ class WeatherNetwork {
             }
             
             guard let data = data else {
-
                 completed(.failure(.unknown))
                 return
             }

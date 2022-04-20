@@ -68,7 +68,6 @@ class WeatherTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
     }
     
     private func initConstraint() {
@@ -108,7 +107,6 @@ class WeatherTableViewCell: UITableViewCell {
             stackView.leadingAnchor.constraint(greaterThanOrEqualTo: weatherState.trailingAnchor, constant: 5),
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
             stackView.widthAnchor.constraint(equalToConstant: contentView.frame.width / 2),
-            
         ])
     }
     
@@ -120,6 +118,7 @@ class WeatherTableViewCell: UITableViewCell {
         day.text = weather.applicableDate
         
         let url = "https://www.metaweather.com/static/img/weather/png/\(weather.weatherStateAbbr).png"
+        
         ImageLoader(url: url).load{ result in
             switch result {
             case .success(let image):

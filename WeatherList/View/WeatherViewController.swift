@@ -14,11 +14,10 @@ class WeatherViewController: UIViewController {
     private let weatherTableView: UITableView = UITableView()
     private let viewModel = WeatherViewModel()
     private let disposeBag = DisposeBag()
-    
     private let weatherManager: WeatherManager = WeatherManager()
     
     lazy var activityView: UIActivityIndicatorView = {
-        let loading = UIActivityIndicatorView(frame: CGRect(x: 110, y: 35, width: view.frame.width, height: view.frame.height))
+        let loading = UIActivityIndicatorView(frame: CGRect(x: view.frame.width / 2, y: view.frame.height / 2, width: view.frame.width, height: view.frame.height))
         loading.hidesWhenStopped = true
         loading.style = UIActivityIndicatorView.Style.large
         loading.center = self.view.center
@@ -34,7 +33,6 @@ class WeatherViewController: UIViewController {
         initView()
         initConstraint()
     
-        
         viewModel.inputs.requestWeatherApi()
         
         viewModel.activated
@@ -43,6 +41,14 @@ class WeatherViewController: UIViewController {
                 result ? self.activityView.startAnimating() : self.activityView.stopAnimating()
             }).disposed(by: disposeBag)
                 
+        viewModel.error
+            .map{ $0.localizedDescription}
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] err in
+                self?.showAlert("에러 메시지", err+"\n 앱 재실행 해주세요")
+            }).disposed(by: disposeBag)
+        
         viewModel.outputs.weathers
             .subscribe(onNext:{ [weak self] result in
                 
@@ -58,6 +64,7 @@ class WeatherViewController: UIViewController {
     
     func initView(){
         self.weatherTableView.dataSource = self
+        self.weatherTableView.delegate = self
         self.weatherTableView.rowHeight = UITableView.automaticDimension
         self.weatherTableView.estimatedRowHeight = UITableView.automaticDimension
         self.view.addSubview(weatherTableView)
@@ -84,9 +91,8 @@ extension WeatherViewController: UITableViewDataSource{
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return viewModel.cities.count
-
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.weatherManager.isRequestCompleted() {
             return self.weatherManager.weathers[section].consolidatedWeather.count
@@ -94,11 +100,10 @@ extension WeatherViewController: UITableViewDataSource{
             return 6
         }
     }
-
+    
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return viewModel.cities[section]
     }
-
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: WeatherTableViewCell.identifier) as? WeatherTableViewCell else { return UITableViewCell()}
@@ -108,13 +113,22 @@ extension WeatherViewController: UITableViewDataSource{
         }
         
         return cell
-        
     }
+}
+
+extension WeatherViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         guard let header = view as? UITableViewHeaderFooterView else { return }
-          header.textLabel?.font = UIFont.boldSystemFont(ofSize: 20)
-          header.textLabel?.frame = header.bounds
 
+        header.textLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        header.textLabel?.frame = header.bounds
+    }
+}
+extension WeatherViewController {
+    func showAlert(_ title: String, _ message: String) {
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alertVC, animated: true, completion: nil)
     }
 }

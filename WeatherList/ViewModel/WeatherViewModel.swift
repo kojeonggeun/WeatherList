@@ -16,6 +16,7 @@ public protocol WeatherInput {
 public protocol WeatherOutput {
     var weathers: Observable<Weather> { get }
     var activated: Observable<Bool> { get }
+    var error: Observable<NetworkError> { get }
 }
 
 public protocol WeatherViewModelType {
@@ -24,23 +25,28 @@ public protocol WeatherViewModelType {
 }
 
 class WeatherViewModel: WeatherInput, WeatherOutput, WeatherViewModelType {
-    private let _weathers = PublishRelay<Weather>()
-    private let _activating = BehaviorSubject<Bool>(value: false)
     
     private let repository = WeatherRepository()
     private let disposeBag = DisposeBag()
     let cities = ["Seoul", "London", "Chicago"]
     
-    var inputs: WeatherInput { return self }
-    var outputs: WeatherOutput { return self }
+    
+    private let _weathers = PublishRelay<Weather>()
+    private let _activating = BehaviorSubject<Bool>(value: false)
+    private let _error = PublishSubject<NetworkError>()
     
     var weathers: Observable<Weather> {
         return _weathers.asObservable()
     }
-    
     var activated: Observable<Bool> {
         return _activating.distinctUntilChanged()
     }
+    var error: Observable<NetworkError> {
+        return _error.asObserver()
+    }
+    
+    var inputs: WeatherInput { return self }
+    var outputs: WeatherOutput { return self }
     
     func requestWeatherApi(){
         for i in cities{
@@ -50,9 +56,9 @@ class WeatherViewModel: WeatherInput, WeatherOutput, WeatherViewModelType {
                 .subscribe(onNext: { result in
                     self._weathers.accept(result)
                     self._activating.onNext(false)
+                },onError: { err in
+                    self._error.onNext(err as! PublishSubject<NetworkError>.Element)
                 }).disposed(by: self.disposeBag)
         }
     }
-    
-    
 }

@@ -27,8 +27,5 @@ extension Date {
         dateFormatter.locale = Locale(identifier: "us")
         dateFormatter.timeZone = TimeZone(identifier: "UTC")
         return dateFormatter.string(from: self)
-        
     }
-    
 }
-
