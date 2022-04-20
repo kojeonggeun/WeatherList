@@ -19,7 +19,7 @@ class WeatherTableViewCell: UITableViewCell {
 
     private let weatherState: UILabel = {
         let state = UILabel()
-        state.text = "오늘날씨 좋네~~~~~~~~"
+        state.text = ""
         state.font = UIFont.systemFont(ofSize:15)
         state.textColor = UIColor.gray
         return state
@@ -34,7 +34,7 @@ class WeatherTableViewCell: UITableViewCell {
     
     private let maxTemp: UILabel = {
         let max = UILabel()
-        max.text = "Max: 9°C"
+        max.text = "Max: 0°C"
         max.font = UIFont.systemFont(ofSize:15)
         max.textColor = UIColor.gray
         return max
@@ -42,24 +42,36 @@ class WeatherTableViewCell: UITableViewCell {
     
     private let minTemp: UILabel = {
         let min = UILabel()
-        min.text = "Min: 1°C"
+        min.text = "Min: 0°C"
         min.font = UIFont.systemFont(ofSize:15)
         min.textColor = UIColor.gray
         return min
     }()
     
-    private let stackView:UIStackView = UIStackView()
+    private let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.spacing = 5
+        stack.distribution = .fillEqually
+        
+        return stack
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setConstraint()
+        initConstraint()
     }
         
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setConstraint() {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+    }
+    
+    private func initConstraint() {
         let temps = [maxTemp, minTemp]
         
         contentView.addSubview(weatherIcon)
@@ -67,11 +79,6 @@ class WeatherTableViewCell: UITableViewCell {
         contentView.addSubview(day)
         contentView.addSubview(stackView)
                 
-        
-        stackView.axis = .horizontal
-        stackView.spacing = 5
-        stackView.distribution = .fillEqually
-
         for i in temps{
             stackView.addArrangedSubview(i)
         }
@@ -103,8 +110,25 @@ class WeatherTableViewCell: UITableViewCell {
             stackView.widthAnchor.constraint(equalToConstant: contentView.frame.width / 2),
             
         ])
-      
-        
     }
     
+    func updateUI(weather: ConsolidatedWeather){
+        
+        weatherState.text = weather.weatherStateName
+        maxTemp.text = "Max:\(Int(weather.maxTemp))°C"
+        minTemp.text = "Min:\(Int(weather.minTemp))°C"
+        day.text = weather.applicableDate
+        
+        let url = "https://www.metaweather.com/static/img/weather/png/\(weather.weatherStateAbbr).png"
+        ImageLoader(url: url).load{ result in
+            switch result {
+            case .success(let image):
+                DispatchQueue.main.async {
+                    self.weatherIcon.image = image
+                }
+            case .failure(_):
+                self.weatherIcon.image = UIImage(systemName: "xmark.app")
+            }
+        }
+    }
 }

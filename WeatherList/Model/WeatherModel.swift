@@ -7,11 +7,13 @@
 
 import Foundation
 
-struct Weather: Codable {
-    let consolidatedWeather: [ConsolidatedWeather]
-
+public struct Weather: Codable {
+    var consolidatedWeather: [ConsolidatedWeather]
+    let title: String
+    
     enum CodingKeys: String, CodingKey {
         case consolidatedWeather = "consolidated_weather"
+        case title
     }
 }
 
@@ -21,7 +23,7 @@ struct ConsolidatedWeather: Codable {
     let weatherStateAbbr: String
     let windDirectionCompass: String
     let created: String
-    let applicableDate: String
+    var applicableDate: String
     let minTemp: Double
     let maxTemp: Double
     let theTemp: Double
@@ -46,5 +48,9 @@ struct ConsolidatedWeather: Codable {
         case windDirection = "wind_direction"
         case airPressure = "air_pressure"
         case humidity, visibility, predictability
+    }
+    
+    mutating func updateApplicableDate(date:String){
+        self.applicableDate = date
     }
 }

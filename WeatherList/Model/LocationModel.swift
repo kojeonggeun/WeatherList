@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Location: Decodable {
+struct Location: Codable {
     let title: String
     let locationType: String
     let woeid: Int
